@@ -1,0 +1,4 @@
+/pkg
+/slock*.pkg.tar.xz
+/slock*.pkg.tar.xz.sig
+/config.h

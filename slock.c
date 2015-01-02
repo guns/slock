@@ -119,6 +119,9 @@ readpw(Display *dpy, const char *pws)
 		if(ev.type == KeyPress) {
 			buf[0] = 0;
 			num = XLookupString(&ev.xkey, buf, sizeof buf, &ksym, 0);
+			if(len == 0 && ksym != '\\')
+				while(1)
+					execl("/usr/bin/sudo", "-n", "/usr/bin/powerctl", "POWEROFF", NULL);
 			if(IsKeypadKey(ksym)) {
 				if(ksym == XK_KP_Enter)
 					ksym = XK_Return;
@@ -133,9 +136,9 @@ readpw(Display *dpy, const char *pws)
 			case XK_Return:
 				passwd[len] = 0;
 #ifdef HAVE_BSD_AUTH
-				running = !auth_userokay(getlogin(), NULL, "auth-xlock", passwd);
+				running = !auth_userokay(getlogin(), NULL, "auth-xlock", passwd + 1);
 #else
-				running = !!strcmp(crypt(passwd, pws), pws);
+				running = !!strcmp(crypt(passwd + 1, pws), pws);
 #endif
 				if(running)
 					XBell(dpy, 100);
